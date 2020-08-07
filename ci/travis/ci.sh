@@ -312,20 +312,15 @@ lint_readme() {
 }
 
 lint_scripts() {
-  FORMAT_SH_PRINT_DIFF=1 "${ROOT_DIR}"/format.sh --all
-}
-
-lint_bazel() {
+  mkdir -p -- "${GOPATH}"
   # Run buildifier without affecting external environment variables
   (
-    mkdir -p -- "${GOPATH}"
     export PATH="${GOPATH}/bin:${GOROOT}/bin:${PATH}"
 
     # Build buildifier
     go get github.com/bazelbuild/buildtools/buildifier
 
-    # Now run buildifier
-    "${ROOT_DIR}"/bazel-format.sh
+    FORMAT_SH_PRINT_DIFF=1 "${ROOT_DIR}"/format.sh --all
   )
 }
 
@@ -364,9 +359,6 @@ _lint() {
   lint_readme
 
   if [ "${platform}" = linux ]; then
-    # Run Bazel linter Buildifier.
-    lint_bazel
-
     # Run TypeScript and HTML linting.
     lint_web
   fi

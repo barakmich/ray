@@ -68,6 +68,10 @@ else
     echo "WARNING: clang-format is not installed!"
 fi
 
+if ! which buildifier >/dev/null; then
+    echo "WARNING: buildifier is not installed!"
+fi
+
 SHELLCHECK_FLAGS=(
   --exclude=1090  # "Can't follow non-constant source. Use a directive to specify location."
   --exclude=1091  # "Not following {file} due to some error"
@@ -200,6 +204,11 @@ format_all() {
         shellcheck_scripts "${shell_files[@]}"
       fi
     fi
+
+    if command -v buildifier >/dev/null; then
+      echo "$(date)" "buildifier...."
+      git ls-files -- '*BUILD*' "${GIT_LS_EXCLUDES[@]}" | xargs -P 5 buildifier
+    fi
     echo "$(date)" "done!"
 }
 
@@ -251,6 +260,12 @@ format_changed() {
         if [ 0 -lt "${#shell_files[@]}" ]; then
             shellcheck_scripts "${shell_files[@]}"
         fi
+    fi
+
+    if command -v buildifier >/dev/null; then
+      if ! git diff --diff-filter=ACRM --quiet --exit-code "$MERGEBASE" -- '*BUILD*' &>/dev/null; then
+        git diff --name-only --diff-filter=ACRM "$MERGEBASE" -- '*BUILD*' | xargs -P 5 buildifier
+      fi
     fi
 }
 

@@ -159,12 +159,6 @@ In addition, there are other formatting checkers for components like the followi
     cd python
     python setup.py check --restructuredtext --strict --metadata
 
-* Bazel format:
-
-.. code-block:: shell
-
-    ./ci/travis/bazel-format.sh
-
 Understanding CI test jobs
 --------------------------
 
